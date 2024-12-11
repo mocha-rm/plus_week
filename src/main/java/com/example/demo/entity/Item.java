@@ -32,6 +32,7 @@ public class Item {
         this.description = description;
         this.manager = manager;
         this.owner = owner;
+        this.status = "PENDING";
     }
 
     public Item() {}
