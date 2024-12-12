@@ -73,36 +73,35 @@ public class ReservationService {
 
     // TODO: 5. QueryDSL 검색 개선
     public List<ReservationResponseDto> searchAndConvertReservations(Long userId, Long itemId) {
-
-        List<Reservation> reservations = searchReservations(userId, itemId);
-
-        return convertToDto(reservations);
+        return reservationRepository.searchReservations(userId, itemId);
     }
 
-    public List<Reservation> searchReservations(Long userId, Long itemId) {
-
-        if (userId != null && itemId != null) {
-            return reservationRepository.findByUserIdAndItemId(userId, itemId);
-        } else if (userId != null) {
-            return reservationRepository.findByUserId(userId);
-        } else if (itemId != null) {
-            return reservationRepository.findByItemId(itemId);
-        } else {
-            return reservationRepository.findAll();
-        }
-    }
-
-    private List<ReservationResponseDto> convertToDto(List<Reservation> reservations) {
-        return reservations.stream()
-                .map(reservation -> new ReservationResponseDto(
-                        reservation.getId(),
-                        reservation.getUser().getNickname(),
-                        reservation.getItem().getName(),
-                        reservation.getStartAt(),
-                        reservation.getEndAt()
-                ))
-                .toList();
-    }
+//    public List<ReservationResponseDto> searchReservations(Long userId, Long itemId) {
+//
+//        return reservationRepository.searchReservations(userId, itemId);
+//
+//        if (userId != null && itemId != null) {
+//            return reservationRepository.findByUserIdAndItemId(userId, itemId);
+//        } else if (userId != null) {
+//            return reservationRepository.findByUserId(userId);
+//        } else if (itemId != null) {
+//            return reservationRepository.findByItemId(itemId);
+//        } else {
+//            return reservationRepository.findAll();
+//        }
+//    }
+//
+//    private List<ReservationResponseDto> convertToDto(List<Reservation> reservations) {
+//        return reservations.stream()
+//                .map(reservation -> new ReservationResponseDto(
+//                        reservation.getId(),
+//                        reservation.getUser().getNickname(),
+//                        reservation.getItem().getName(),
+//                        reservation.getStartAt(),
+//                        reservation.getEndAt()
+//                ))
+//                .toList();
+//    }
 
     // TODO: 7. 리팩토링
     @Transactional
