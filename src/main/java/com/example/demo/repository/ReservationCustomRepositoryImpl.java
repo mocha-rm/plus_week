@@ -36,6 +36,7 @@ public class ReservationCustomRepositoryImpl implements ReservationCustomReposit
                         reservation.id,
                         reservation.user.nickname,
                         reservation.item.name,
+                        reservation.status,
                         reservation.startAt,
                         reservation.endAt
                 ))

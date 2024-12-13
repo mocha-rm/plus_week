@@ -27,8 +27,9 @@ public class ReservationController {
     }
 
     @PatchMapping("/{id}/update-status")
-    public void updateReservation(@PathVariable Long id, @RequestBody String status) {
-        reservationService.updateReservationStatus(id, status);
+    public ResponseEntity<ReservationResponseDto> updateReservation(@PathVariable Long id, @RequestBody ReservationRequestDto reservationRequestDto) {
+        ReservationResponseDto reservationResponseDto = reservationService.updateReservationStatus(id, reservationRequestDto.getStatus());
+        return new ResponseEntity<>(reservationResponseDto, HttpStatus.OK);
     }
 
     @GetMapping
