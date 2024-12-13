@@ -2,11 +2,13 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.hibernate.annotations.DynamicInsert;
 
 
 @Entity
 @Getter
 // TODO: 6. Dynamic Insert
+@DynamicInsert
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +34,6 @@ public class Item {
         this.description = description;
         this.manager = manager;
         this.owner = owner;
-        this.status = "PENDING";
     }
 
     public Item() {}
