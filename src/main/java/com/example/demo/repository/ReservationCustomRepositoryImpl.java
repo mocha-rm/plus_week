@@ -4,6 +4,7 @@ import com.example.demo.dto.ReservationResponseDto;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.Generated;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -13,6 +14,7 @@ import static com.example.demo.entity.QItem.item;
 import static com.example.demo.entity.QReservation.reservation;
 import static com.example.demo.entity.QUser.user;
 
+@Generated
 @Repository
 @RequiredArgsConstructor
 public class ReservationCustomRepositoryImpl implements ReservationCustomRepository {

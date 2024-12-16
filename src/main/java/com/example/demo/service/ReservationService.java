@@ -10,9 +10,12 @@ import com.example.demo.repository.ItemRepository;
 import com.example.demo.repository.ReservationRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.status.ReservationStatus;
+import org.apache.tomcat.util.http.parser.HttpParser;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -44,8 +47,8 @@ public class ReservationService {
             throw new ReservationConflictException("해당 물건은 이미 그 시간에 예약이 있습니다.");
         }
 
-        Item item = itemRepository.findById(itemId).orElseThrow(() -> new IllegalArgumentException("해당 ID에 맞는 값이 존재하지 않습니다."));
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("해당 ID에 맞는 값이 존재하지 않습니다."));
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 ID에 맞는 값이 존재하지 않습니다."));
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 ID에 맞는 값이 존재하지 않습니다."));
         Reservation reservation = new Reservation(item, user, ReservationStatus.PENDING, startAt, endAt);
         Reservation savedReservation = reservationRepository.save(reservation);
 
@@ -89,15 +92,15 @@ public class ReservationService {
         switch (status) {
             case ReservationStatus.CANCELED -> {
                 if (reservation.getStatus().equals(ReservationStatus.EXPIRED)) {
-                    throw new IllegalArgumentException("EXPIRED 상태인 예약은 취소할 수 없습니다.");
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "EXPIRED 상태인 예약은 취소할 수 없습니다.");
                 }
             }
             case ReservationStatus.APPROVED, EXPIRED -> {
                 if (!reservation.getStatus().equals(ReservationStatus.PENDING)) {
-                    throw new IllegalArgumentException("PENDING 상태만 " + status + "로 변경 가능합니다.");
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "PENDING 상태만 " + status + "로 변경 가능합니다.");
                 }
             }
-            default -> throw new IllegalArgumentException("올바르지 않은 상태: " + status);
+            default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "올바르지 않은 상태: " + status);
         }
 
         reservation.updateStatus(status);

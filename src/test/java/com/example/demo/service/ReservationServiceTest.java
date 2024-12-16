@@ -17,6 +17,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,7 +33,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
-
     private LocalDateTime startAt;
     private LocalDateTime endAt;
 
@@ -88,13 +89,14 @@ class ReservationServiceTest {
         when(itemRepository.findById(validItemId)).thenReturn(Optional.of(mockItem));
 
         // When
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
                 () -> reservationService.createReservation(validItemId, invalidUserId, startAt, endAt)
         );
 
         // Then
-        assertThat(exception.getMessage()).isEqualTo("해당 ID에 맞는 값이 존재하지 않습니다.");
+        assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(exception.getMessage()).contains("해당 ID에 맞는 값이 존재하지 않습니다.");
     }
 
     @Test
@@ -107,13 +109,14 @@ class ReservationServiceTest {
         when(itemRepository.findById(invalidItemId)).thenReturn(Optional.empty());
 
         // When
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
                 () -> reservationService.createReservation(invalidItemId, validUserId, startAt, endAt)
         );
 
         // Then
-        assertThat(exception.getMessage()).isEqualTo("해당 ID에 맞는 값이 존재하지 않습니다.");
+        assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(exception.getMessage()).contains("해당 ID에 맞는 값이 존재하지 않습니다.");
     }
 
     @Test
@@ -234,7 +237,7 @@ class ReservationServiceTest {
 
         // When
         assertThatThrownBy(() -> reservationService.updateReservationStatus(reservationId, ReservationStatus.CANCELED))
-                .isInstanceOf(IllegalArgumentException.class) // Then
+                .isInstanceOf(ResponseStatusException.class) // Then
                 .hasMessageContaining("EXPIRED 상태인 예약은 취소할 수 없습니다.");
     }
 
@@ -253,7 +256,7 @@ class ReservationServiceTest {
 
         // When
         assertThatThrownBy(() -> reservationService.updateReservationStatus(reservationId, ReservationStatus.APPROVED))
-                .isInstanceOf(IllegalArgumentException.class) // Then
+                .isInstanceOf(ResponseStatusException.class) // Then
                 .hasMessageContaining("PENDING 상태만 APPROVED로 변경 가능합니다.");
     }
 
@@ -272,7 +275,7 @@ class ReservationServiceTest {
 
         // When
         assertThatThrownBy(() -> reservationService.updateReservationStatus(reservationId, ReservationStatus.PENDING))
-                .isInstanceOf(IllegalArgumentException.class) // Then
+                .isInstanceOf(ResponseStatusException.class) // Then
                 .hasMessageContaining("올바르지 않은 상태: " + mockReservation.getStatus());
     }
 

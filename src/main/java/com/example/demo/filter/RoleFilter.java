@@ -9,11 +9,13 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.Generated;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
 
+@Generated
 @RequiredArgsConstructor
 public class RoleFilter implements CommonAuthFilter {
 

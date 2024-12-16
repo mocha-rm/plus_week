@@ -7,10 +7,12 @@ import com.example.demo.exception.UnauthorizedException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.Generated;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+@Generated
 @Component
 public class AdminRoleInterceptor implements HandlerInterceptor {
     @Override

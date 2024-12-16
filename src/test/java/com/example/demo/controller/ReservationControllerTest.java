@@ -12,15 +12,19 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -82,14 +86,16 @@ class ReservationControllerTest {
         // Given
         User user = createTestUser();
         given(reservationService.createReservation(99L, user.getId(), startAt, endAt))
-                .willThrow(new IllegalArgumentException("해당 ID에 맞는 값이 존재하지 않습니다."));
+                .willThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 ID에 맞는 값이 존재하지 않습니다."));
 
         // When
         mockMvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(createReservationJson(99L, user.getId(), startAt, endAt)))
-                .andExpect(status().isInternalServerError()) // Then
-                .andExpect(result -> assertEquals("해당 ID에 맞는 값이 존재하지 않습니다.", result.getResolvedException().getMessage()));
+                .andExpect(status().isNotFound()) // Then
+                .andExpect(result -> assertTrue(
+                        Objects.requireNonNull(result.getResolvedException()).getMessage().contains("해당 ID에 맞는 값이 존재하지 않습니다.")
+                ));
     }
 
     @Test
@@ -98,14 +104,16 @@ class ReservationControllerTest {
         // Given
         Item item = createTestItem(createTestUser());
         given(reservationService.createReservation(item.getId(), 99L, startAt, endAt))
-                .willThrow(new IllegalArgumentException("해당 ID에 맞는 값이 존재하지 않습니다."));
+                .willThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 ID에 맞는 값이 존재하지 않습니다."));
 
         // When
         mockMvc.perform(post("/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(createReservationJson(item.getId(), 99L, startAt, endAt)))
-                .andExpect(status().isInternalServerError()) // Then
-                .andExpect(result -> assertEquals("해당 ID에 맞는 값이 존재하지 않습니다.", result.getResolvedException().getMessage()));
+                .andExpect(status().isNotFound()) // Then
+                .andExpect(result -> assertTrue(
+                        Objects.requireNonNull(result.getResolvedException()).getMessage().contains("해당 ID에 맞는 값이 존재하지 않습니다.")
+                ));
     }
 
     @Test
@@ -152,14 +160,16 @@ class ReservationControllerTest {
 
         // Mock 설정: 예외 발생
         given(reservationService.updateReservationStatus(testReservation.getId(), status))
-                .willThrow(new IllegalArgumentException("EXPIRED 상태인 예약은 취소할 수 없습니다."));
+                .willThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST, "EXPIRED 상태인 예약은 취소할 수 없습니다."));
 
         // When
         mockMvc.perform(patch("/reservations/{id}/update-status", testReservation.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(patchReservationJson(status)))
-                .andExpect(status().isBadRequest()) // Then: 예외 상황
-                .andExpect(jsonPath("$.message").value("EXPIRED 상태인 예약은 취소할 수 없습니다."));
+                .andExpect(status().isBadRequest()) // Then
+                .andExpect(result -> assertTrue(
+                        Objects.requireNonNull(result.getResolvedException()).getMessage().contains("EXPIRED 상태인 예약은 취소할 수 없습니다.")
+                ));
     }
 
     @Test
@@ -174,14 +184,16 @@ class ReservationControllerTest {
 
         // Mock 설정: 예외 발생
         given(reservationService.updateReservationStatus(testReservation.getId(), status))
-                .willThrow(new IllegalArgumentException("PENDING 상태만 " + status + "로 변경 가능합니다."));
+                .willThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST, "PENDING 상태만 " + status + "로 변경 가능합니다."));
 
         // When
         mockMvc.perform(patch("/reservations/{id}/update-status", testReservation.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(patchReservationJson(status)))
-                .andExpect(status().isBadRequest()) // Then: 예외 상황
-                .andExpect(jsonPath("$.message").value("PENDING 상태만 " + status + "로 변경 가능합니다."));
+                .andExpect(status().isBadRequest()) // Then
+                .andExpect(result -> assertTrue(
+                        Objects.requireNonNull(result.getResolvedException()).getMessage().contains("PENDING 상태만 " + status + "로 변경 가능합니다.")
+                ));
     }
 
     private User createTestUser() {

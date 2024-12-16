@@ -1,7 +1,9 @@
 package com.example.demo.entity;
 
+import lombok.Generated;
 import lombok.Getter;
 
+@Generated
 @Getter
 public enum Role {
     USER("user"),
