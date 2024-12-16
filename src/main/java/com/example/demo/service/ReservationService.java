@@ -80,7 +80,6 @@ public class ReservationService {
     // TODO: 7. 리팩토링
     @Transactional
     public ReservationResponseDto updateReservationStatus(Long reservationId, ReservationStatus status) {
-        //이거 업데이트 할 때 @DynamicUpdate 한번 확인해보기
         Reservation reservation = reservationRepository.findByIdWithQuery(reservationId);
 
         switch (status) {
