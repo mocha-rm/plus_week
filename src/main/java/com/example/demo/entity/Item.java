@@ -1,12 +1,14 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.hibernate.annotations.DynamicInsert;
 
 
 @Entity
 @Getter
+@AllArgsConstructor
 // TODO: 6. Dynamic Insert
 @DynamicInsert
 public class Item {
