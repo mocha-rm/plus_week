@@ -23,7 +23,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -52,8 +51,8 @@ class ReservationControllerTest {
                 .addFilters() // 특정 필터를 추가하거나 제외
                 .build();
 
-        startAt = LocalDateTime.now();
-        endAt = LocalDateTime.now();
+        startAt = LocalDateTime.parse("2024-12-18T14:30:11");
+        endAt = LocalDateTime.parse("2024-12-18T14:30:11");
     }
 
     @Test

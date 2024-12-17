@@ -36,8 +36,6 @@ public class UserController {
     @PostMapping("/logout")
     public void logout(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.invalidate();
-        }
+        session.invalidate();
     }
 }

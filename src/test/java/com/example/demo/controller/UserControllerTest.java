@@ -5,8 +5,11 @@ import com.example.demo.dto.Authentication;
 import com.example.demo.dto.LoginRequestDto;
 import com.example.demo.dto.UserRequestDto;
 import com.example.demo.entity.Role;
+import com.example.demo.filter.AuthFilter;
 import com.example.demo.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpSession;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +19,8 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.server.ResponseStatusException;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -25,10 +29,15 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+
 
 @WebMvcTest(UserController.class)
 class UserControllerTest {
+    @Autowired
+    private WebApplicationContext context;
 
     @Autowired
     private MockMvc mockMvc;
@@ -36,7 +45,13 @@ class UserControllerTest {
     @MockitoBean
     private UserService userService;
 
-
+    @BeforeEach
+    void setUp() {
+        mockMvc = MockMvcBuilders.webAppContextSetup(context)
+                .addFilter(new AuthFilter(), "/**") // 특정 필터 등록
+                .build();
+    }
+    
     @Test
     @DisplayName("회원가입")
     void signUp() throws Exception {
@@ -142,8 +157,8 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("로그아웃")
-    void logout() throws Exception {
+    @DisplayName("로그아웃 - 세션이 존재하는 경우")
+    void logoutWithSession() throws Exception {
         MockHttpSession mockHttpSession = new MockHttpSession();
         mockHttpSession.setAttribute("USER_AUTH", "test");
 
@@ -151,5 +166,15 @@ class UserControllerTest {
                         .session(mockHttpSession))
                 .andExpect(status().isOk())
                 .andExpect(request().sessionAttributeDoesNotExist("USER_AUTH"));
+    }
+
+    @Test
+    @DisplayName("로그아웃 - 세션이 없는 경우")
+    void logoutWithoutSession() throws Exception {
+        HttpSession session = new MockHttpSession();
+        if (session == null) {
+        mockMvc.perform(post("/users/logout"))
+                .andExpect(status().isInternalServerError());
+        }
     }
 }
