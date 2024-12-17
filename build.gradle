@@ -32,6 +32,8 @@ dependencies {
     runtimeOnly 'com.mysql:mysql-connector-j'
     runtimeOnly 'com.h2database:h2'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.mockito:mockito-core'
+    testImplementation 'org.assertj:assertj-core'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation 'at.favre.lib:bcrypt:0.10.2'
 
@@ -46,28 +48,63 @@ dependencies {
 }
 
 jacocoTestReport {
+    dependsOn test
     reports {
         html.required.set(true)
         xml.required.set(false)
         csv.required.set(false)
 
-// 리포트의 저장 경로를 설정합니다.
         html.outputLocation.set(layout.buildDirectory.dir("jacoco/jacocoHtml"))
         xml.outputLocation.set(layout.buildDirectory.file("jacoco/jacoco.xml"))
     }
+
+    def Qdomains = []
+    for (qPattern in '**/QA'..'**/QZ') {
+        Qdomains.add(qPattern + '*')
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    "**.*Application*",
+                    "**.*Config*",
+                    "**.*Dto*",
+                    "**.*Request*",
+                    "**.*Response*",
+                    "**.*Interceptor*",
+                    "**.*Exception*"
+            ] + Qdomains)
+        }))
+    }
+    finalizedBy 'jacocoTestCoverageVerification'
 }
 
 jacocoTestCoverageVerification {
+    def Qdomains = []
+    for (qpattern in '*.QA'..'*.QZ') {
+        Qdomains.add(qpattern + '*')
+    }
 
     violationRules { // 커버리지의 범위와 퍼센테이지를 설정합니다.
         rule {
             element = 'CLASS'
+            enabled = true
 
             limit {
                 counter = 'BRANCH'
                 value = 'COVEREDRATIO'
                 minimum = 0.60
             }
+
+            excludes = [
+                    "**.*Application*",
+                    "**.*Config*",
+                    "**.*Dto*",
+                    "**.*Request*",
+                    "**.*Response*",
+                    "**.*Interceptor*",
+                    "**.*Exception*",
+            ] + Qdomains
         }
     }
 }
