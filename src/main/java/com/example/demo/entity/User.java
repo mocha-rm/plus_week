@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Entity
+@Table(name = "users")
 @Getter
 @AllArgsConstructor
 public class User {
