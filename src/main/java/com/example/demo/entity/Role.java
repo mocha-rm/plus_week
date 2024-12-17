@@ -2,6 +2,8 @@ package com.example.demo.entity;
 
 import lombok.Generated;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 @Generated
 @Getter
@@ -22,6 +24,6 @@ public enum Role {
             }
         }
 
-        throw new IllegalArgumentException("해당하는 이름의 권한을 찾을 수 없습니다: " + roleName);
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "해당하는 이름의 권한을 찾을 수 없습니다: " + roleName);
     }
 }
