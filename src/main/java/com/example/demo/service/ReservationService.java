@@ -90,12 +90,12 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findByIdWithQuery(reservationId);
 
         switch (status) {
-            case ReservationStatus.CANCELED -> {
+            case CANCELED -> {
                 if (reservation.getStatus().equals(ReservationStatus.EXPIRED)) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "EXPIRED 상태인 예약은 취소할 수 없습니다.");
                 }
             }
-            case ReservationStatus.APPROVED, EXPIRED -> {
+            case APPROVED, EXPIRED -> {
                 if (!reservation.getStatus().equals(ReservationStatus.PENDING)) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "PENDING 상태만 " + status + "로 변경 가능합니다.");
                 }
