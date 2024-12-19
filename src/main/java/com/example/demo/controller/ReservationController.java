@@ -35,8 +35,8 @@ public class ReservationController {
     }
 
     @GetMapping
-    public void findAll() {
-        reservationService.getReservations();
+    public ResponseEntity<List<ReservationResponseDto>> findAll() {
+        return new ResponseEntity<>(reservationService.getReservations(), HttpStatus.OK);
     }
 
     @GetMapping("/search")
