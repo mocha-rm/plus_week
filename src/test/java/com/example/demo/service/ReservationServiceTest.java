@@ -155,7 +155,7 @@ class ReservationServiceTest {
         assertThat(result).isNotEmpty();
         assertThat(result.size()).isEqualTo(1);
 
-        ReservationResponseDto responseDto = result.getFirst();
+        ReservationResponseDto responseDto = result.get(0);
         assertThat(responseDto.getId()).isEqualTo(mockReservation.getId());
         assertThat(responseDto.getNickname()).isEqualTo(mockReservation.getUser().getNickname());
         assertThat(responseDto.getItemName()).isEqualTo(mockReservation.getItem().getName());
@@ -192,7 +192,7 @@ class ReservationServiceTest {
         assertThat(result).isNotEmpty();
         assertThat(result.size()).isEqualTo(1);
 
-        ReservationResponseDto responseDto = result.getFirst();
+        ReservationResponseDto responseDto = result.get(0);
         assertThat(responseDto.getId()).isEqualTo(mockResponseDto.getId());
         assertThat(responseDto.getNickname()).isEqualTo(mockResponseDto.getNickname());
         assertThat(responseDto.getItemName()).isEqualTo(mockResponseDto.getItemName());
