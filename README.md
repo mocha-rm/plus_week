@@ -69,6 +69,44 @@ Request - JSON
 ## GetAllReservation
 GET http://43.202.25.151:8080/reservations
 
+Response - JSON
+```json
+[
+    {
+        "id": 1,
+        "nickname": "user",
+        "itemName": "iphone2",
+        "status": "PENDING",
+        "startAt": "2024-12-15T14:30:00",
+        "endAt": "2024-12-15T14:30:00"
+    },
+    {
+        "id": 2,
+        "nickname": "user",
+        "itemName": "iphone3",
+        "status": "PENDING",
+        "startAt": "2024-12-15T14:30:00",
+        "endAt": "2024-12-15T14:30:00"
+    },
+    {
+        "id": 3,
+        "nickname": "user",
+        "itemName": "iphone4",
+        "status": "PENDING",
+        "startAt": "2024-12-15T14:30:00",
+        "endAt": "2024-12-15T14:30:00"
+    },
+    {
+        "id": 4,
+        "nickname": "user",
+        "itemName": "iphone5",
+        "status": "PENDING",
+        "startAt": "2024-12-15T14:30:00",
+        "endAt": "2024-12-15T14:30:00"
+    }
+]
+```
+
 ## SearchReservation
 GET http://43.202.25.151:8080/reservations/search?userId=1&itemId=1
 
